@@ -1,0 +1,4 @@
+ADMIN;admin;admin123;A-01
+CLIENTE;cliente1;cliente123;C-01;CLI10;800.0
+MESERO;mesero1;mesero123;M-01;Luis;EMP20
+COCINERO;cocinero1;cocinero123;K-01;Ana;EMP20
