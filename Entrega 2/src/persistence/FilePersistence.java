@@ -5,7 +5,9 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -19,19 +21,24 @@ import modelo.CopiaJuego;
 import modelo.Empleado;
 import modelo.EstadoJuego;
 import modelo.EstadoSolicitudTurno;
+import modelo.EstadoTorneo;
 import modelo.JuegoDeMesa;
 import modelo.Mesero;
+import modelo.ParticipanteTorneo;
 import modelo.Prestamo;
 import modelo.RestriccionEdad;
 import modelo.RubroVenta;
 import modelo.SolicitudCambioTurno;
 import modelo.Sugerencia;
 import modelo.TipoSolicitudTurno;
+import modelo.TipoTorneo;
+import modelo.Torneo;
 import modelo.Usuario;
 import modelo.UsuarioBasico;
 import modelo.Venta;
 import modelo.VentaCafe;
 import modelo.VentaJuegos;
+import modelo.VoucherDescuento;
 
 public class FilePersistence {
     private static final String BASE_FOLDER = "data";
@@ -43,6 +50,8 @@ public class FilePersistence {
     private static final String LOANS_FILE = "prestamos.txt";
     private static final String SHIFT_REQUESTS_FILE = "solicitudes_turno.txt";
     private static final String MENU_SUGGESTIONS_FILE = "sugerencias_menu.txt";
+    private static final String TOURNAMENTS_FILE = "torneos.txt";
+    private static final String VOUCHERS_FILE = "vouchersDescuento.txt";
 
     private final Path dataFolder;
 
@@ -75,6 +84,8 @@ public class FilePersistence {
         data.setHistorialPrestamos(loadPrestamos(copiasMap, usuarios));
         data.setSolicitudesTurno(loadSolicitudesTurno());
         data.setSugerenciasMenu(loadSugerencias());
+        data.setTorneos(loadTorneos());
+        data.setVouchersDescuento(loadVouchersDescuento());
         return data;
     }
 
@@ -88,6 +99,8 @@ public class FilePersistence {
         savePrestamos(data.getHistorialPrestamos());
         saveSolicitudesTurno(data.getSolicitudesTurno());
         saveSugerencias(data.getSugerenciasMenu());
+        saveTorneos(data.getTorneos());
+        saveVouchersDescuento(data.getVouchersDescuento());
     }
 
     public String getDataFolderPath() {
@@ -427,6 +440,145 @@ public class FilePersistence {
                     String.valueOf(sugerencia.isAprobada())));
         }
         writeLines(dataFolder.resolve(MENU_SUGGESTIONS_FILE), lines);
+    }
+
+    private List<Torneo> loadTorneos() {
+        List<Torneo> torneos = new ArrayList<>();
+        Path path = dataFolder.resolve(TOURNAMENTS_FILE);
+        if (!Files.exists(path)) {
+            return torneos;
+        }
+        try {
+            for (String line : Files.readAllLines(path, StandardCharsets.UTF_8)) {
+                if (line.isBlank()) {
+                    continue;
+                }
+                String[] p = line.split(";", -1);
+                int id = Integer.parseInt(p[0]);
+                String nombre = p[1];
+                int idJuego = Integer.parseInt(p[2]);
+                String nombreJuego = p[3];
+                TipoTorneo tipo = TipoTorneo.valueOf(p[4]);
+                EstadoTorneo estado = EstadoTorneo.valueOf(p[5]);
+                int cantidadMax = Integer.parseInt(p[6]);
+                int diaSemana = Integer.parseInt(p[7]);
+                LocalDate fechaCreacion = LocalDate.parse(p[8]);
+                LocalDate fechaInicio = p[9].isEmpty() ? null : LocalDate.parse(p[9]);
+                LocalDate fechaFin = p[10].isEmpty() ? null : LocalDate.parse(p[10]);
+                int idAdmin = Integer.parseInt(p[11]);
+                String nombreAdmin = p[12];
+                double montoEntrada = Double.parseDouble(p[13]);
+                double premioTotal = Double.parseDouble(p[14]);
+
+                Torneo torneo = new Torneo(id, nombre, idJuego, nombreJuego, tipo,
+                        cantidadMax, diaSemana, idAdmin, nombreAdmin, montoEntrada);
+                torneo.setEstado(estado);
+                torneo.setFechaCreacion(fechaCreacion);
+                torneo.setFechaInicio(fechaInicio);
+                torneo.setFechaFin(fechaFin);
+                torneo.setPremioTotal(premioTotal);
+
+                torneos.add(torneo);
+            }
+        } catch (IOException e) {
+            throw new RuntimeException("No se pudieron cargar torneos", e);
+        }
+        return torneos;
+    }
+
+    private void saveTorneos(List<Torneo> torneos) {
+        List<String> lines = new ArrayList<>();
+        for (Torneo torneo : torneos) {
+            String fechaInicio = torneo.getFechaInicio() != null ? torneo.getFechaInicio().toString() : "";
+            String fechaFin = torneo.getFechaFin() != null ? torneo.getFechaFin().toString() : "";
+            
+            lines.add(String.join(";",
+                    String.valueOf(torneo.getId()),
+                    torneo.getNombre(),
+                    String.valueOf(torneo.getIdJuego()),
+                    torneo.getNombreJuego(),
+                    torneo.getTipo().name(),
+                    torneo.getEstado().name(),
+                    String.valueOf(torneo.getCantidadMaximaParticipantes()),
+                    String.valueOf(torneo.getDiaSemana()),
+                    torneo.getFechaCreacion().toString(),
+                    fechaInicio,
+                    fechaFin,
+                    String.valueOf(torneo.getIdAdministrador()),
+                    torneo.getNombreAdministrador(),
+                    String.valueOf(torneo.getMontoEntrada()),
+                    String.valueOf(torneo.getPremioTotal())));
+        }
+        writeLines(dataFolder.resolve(TOURNAMENTS_FILE), lines);
+    }
+
+    private List<VoucherDescuento> loadVouchersDescuento() {
+        List<VoucherDescuento> vouchers = new ArrayList<>();
+        Path path = dataFolder.resolve(VOUCHERS_FILE);
+        if (!Files.exists(path)) {
+            return vouchers;
+        }
+        try {
+            for (String line : Files.readAllLines(path, StandardCharsets.UTF_8)) {
+                if (line.isBlank()) {
+                    continue;
+                }
+                String[] p = line.split(";", -1);
+                int id = Integer.parseInt(p[0]);
+                int idUsuario = Integer.parseInt(p[1]);
+                int idTorneo = Integer.parseInt(p[2]);
+                String nombreTorneo = p[3];
+                double montoDescuento = Double.parseDouble(p[4]);
+                boolean usado = Boolean.parseBoolean(p[5]);
+                LocalDate fechaOtorgamiento = LocalDate.parse(p[6]);
+                LocalDate fechaUso = p[7].isEmpty() ? null : LocalDate.parse(p[7]);
+                LocalDate fechaVencimiento = p[8].isEmpty() ? null : LocalDate.parse(p[8]);
+
+                // Calcular días de validez (aproximado)
+                int diasValidez = 0;
+                if (fechaVencimiento != null) {
+                    diasValidez = (int) java.time.temporal.ChronoUnit.DAYS.between(
+                            fechaOtorgamiento, fechaVencimiento);
+                }
+
+                VoucherDescuento voucher = new VoucherDescuento(id, idUsuario, idTorneo,
+                        nombreTorneo, montoDescuento, diasValidez);
+                voucher.setUsado(usado);
+                voucher.setFechaOtorgamiento(fechaOtorgamiento);
+                if (fechaUso != null) {
+                    voucher.setFechaUso(fechaUso);
+                }
+                if (fechaVencimiento != null) {
+                    voucher.setFechaVencimiento(fechaVencimiento);
+                }
+
+                vouchers.add(voucher);
+            }
+        } catch (IOException e) {
+            throw new RuntimeException("No se pudieron cargar vouchers", e);
+        }
+        return vouchers;
+    }
+
+    private void saveVouchersDescuento(List<VoucherDescuento> vouchers) {
+        List<String> lines = new ArrayList<>();
+        for (VoucherDescuento voucher : vouchers) {
+            String fechaUso = voucher.getFechaUso() != null ? voucher.getFechaUso().toString() : "";
+            String fechaVencimiento = voucher.getFechaVencimiento() != null ?
+                    voucher.getFechaVencimiento().toString() : "";
+
+            lines.add(String.join(";",
+                    String.valueOf(voucher.getId()),
+                    String.valueOf(voucher.getIdUsuario()),
+                    String.valueOf(voucher.getIdTorneo()),
+                    voucher.getNombreTorneo(),
+                    String.valueOf(voucher.getMontoDescuento()),
+                    String.valueOf(voucher.isUsado()),
+                    voucher.getFechaOtorgamiento().toString(),
+                    fechaUso,
+                    fechaVencimiento));
+        }
+        writeLines(dataFolder.resolve(VOUCHERS_FILE), lines);
     }
 
     private void writeLines(Path path, List<String> lines) {

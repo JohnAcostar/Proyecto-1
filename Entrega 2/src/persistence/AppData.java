@@ -8,8 +8,10 @@ import modelo.JuegoDeMesa;
 import modelo.Prestamo;
 import modelo.SolicitudCambioTurno;
 import modelo.Sugerencia;
+import modelo.Torneo;
 import modelo.Usuario;
 import modelo.Venta;
+import modelo.VoucherDescuento;
 
 public class AppData {
     private List<Usuario> usuarios;
@@ -20,6 +22,8 @@ public class AppData {
     private List<Prestamo> historialPrestamos;
     private List<SolicitudCambioTurno> solicitudesTurno;
     private List<Sugerencia> sugerenciasMenu;
+    private List<Torneo> torneos;
+    private List<VoucherDescuento> vouchersDescuento;
 
     public AppData() {
         this.usuarios = new ArrayList<>();
@@ -30,6 +34,8 @@ public class AppData {
         this.historialPrestamos = new ArrayList<>();
         this.solicitudesTurno = new ArrayList<>();
         this.sugerenciasMenu = new ArrayList<>();
+        this.torneos = new ArrayList<>();
+        this.vouchersDescuento = new ArrayList<>();
     }
 
     public List<Usuario> getUsuarios() {
@@ -94,5 +100,21 @@ public class AppData {
 
     public void setSugerenciasMenu(List<Sugerencia> sugerenciasMenu) {
         this.sugerenciasMenu = sugerenciasMenu;
+    }
+
+    public List<Torneo> getTorneos() {
+        return torneos;
+    }
+
+    public void setTorneos(List<Torneo> torneos) {
+        this.torneos = torneos;
+    }
+
+    public List<VoucherDescuento> getVouchersDescuento() {
+        return vouchersDescuento;
+    }
+
+    public void setVouchersDescuento(List<VoucherDescuento> vouchersDescuento) {
+        this.vouchersDescuento = vouchersDescuento;
     }
 }
