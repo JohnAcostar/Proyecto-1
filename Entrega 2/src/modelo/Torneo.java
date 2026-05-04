@@ -109,8 +109,9 @@ public class Torneo implements Serializable {
             return false; // Torneo lleno
         }
         
-        // Actualizar contadores de fans si aplica
-        if (participante.esFan()) {
+        // Actualizar contadores de spots reservados para fans si aplica.
+        if (participante.esFan() && spotsUsadosFans < spotReservadosFans) {
+            participante.setUsoSpotReservadoFan(true);
             spotsUsadosFans++;
         }
         
@@ -123,8 +124,8 @@ public class Torneo implements Serializable {
     public boolean removerParticipante(int idUsuario) {
         boolean removed = participantes.removeIf(p -> {
             if (p.getIdUsuario() == idUsuario) {
-                // Actualizar contadores de fans si aplica
-                if (p.esFan()) {
+                // Actualizar contadores de spots reservados para fans si aplica.
+                if (p.usoSpotReservadoFan()) {
                     spotsUsadosFans = Math.max(0, spotsUsadosFans - 1);
                 }
                 return true;
@@ -132,6 +133,10 @@ public class Torneo implements Serializable {
             return false;
         });
         return removed;
+    }
+
+    public boolean removerParticipante(String idUsuario) {
+        return removerParticipante(parsearId(idUsuario));
     }
 
     /**
@@ -144,6 +149,10 @@ public class Torneo implements Serializable {
                 .orElse(null);
     }
 
+    public ParticipanteTorneo obtenerParticipante(String idUsuario) {
+        return obtenerParticipante(parsearId(idUsuario));
+    }
+
     /**
      * Cuenta cuántos participantes tiene un usuario registrado en este torneo.
      */
@@ -151,6 +160,15 @@ public class Torneo implements Serializable {
         return (int) participantes.stream()
                 .filter(p -> p.getIdUsuario() == idUsuario)
                 .count();
+    }
+
+    public int contarParticipantesDelUsuario(String idUsuario) {
+        return contarParticipantesDelUsuario(parsearId(idUsuario));
+    }
+
+    private int parsearId(String idTexto) {
+        String digitos = idTexto == null ? "" : idTexto.replaceAll("\\D", "");
+        return digitos.isEmpty() ? 0 : Integer.parseInt(digitos);
     }
 
     /**

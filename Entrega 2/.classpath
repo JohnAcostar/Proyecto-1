@@ -1,10 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
-	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-21">
-		<attributes>
-			<attribute name="module" value="true"/>
-		</attributes>
-	</classpathentry>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-21"/>
 	<classpathentry kind="src" path="src"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/5"/>
+	<classpathentry kind="lib" path="C:/Users/Juan/.vscode/extensions/vscjava.vscode-java-test-0.45.0/server/junit-jupiter-api_5.14.3.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Juan/.vscode/extensions/vscjava.vscode-java-test-0.45.0/server/junit-jupiter-engine_5.14.3.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Juan/.vscode/extensions/vscjava.vscode-java-test-0.45.0/server/junit-platform-commons_1.14.3.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Juan/.vscode/extensions/vscjava.vscode-java-test-0.45.0/server/junit-platform-engine_1.14.3.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Juan/.vscode/extensions/vscjava.vscode-java-test-0.45.0/server/junit-platform-launcher_1.14.3.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Juan/.vscode/extensions/vscjava.vscode-java-test-0.45.0/server/org.apiguardian.api_1.1.2.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Juan/.vscode/extensions/vscjava.vscode-java-test-0.45.0/server/org.opentest4j_1.3.0.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

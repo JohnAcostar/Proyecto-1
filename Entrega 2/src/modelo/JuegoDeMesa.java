@@ -29,6 +29,13 @@ public class JuegoDeMesa {
         this.precioVenta = 0.0;
     }
 
+    public JuegoDeMesa(String idJuego, String nombre, CategoriaJuego categoria,
+            int minJugadores, double precioVenta, RestriccionEdad restriccionEdad, int maxJugadores) {
+        this(idJuego, nombre, 0, "", minJugadores, maxJugadores, restriccionEdad,
+                categoria, EstadoJuego.NUEVO, false);
+        this.precioVenta = precioVenta;
+    }
+
     public boolean esAptoParaCantidadJugadores(int cantidad) {
         return cantidad >= minJugadores && cantidad <= maxJugadores;
     }
@@ -49,6 +56,11 @@ public class JuegoDeMesa {
 
     public String getIdJuego() {
         return idJuego;
+    }
+
+    public int getId() {
+        String digitos = idJuego == null ? "" : idJuego.replaceAll("\\D", "");
+        return digitos.isEmpty() ? 0 : Integer.parseInt(digitos);
     }
 
     public String getNombre() {

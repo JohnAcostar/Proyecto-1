@@ -47,7 +47,7 @@ public class ServicioTorneos {
                 tipo,
                 cantidadParticipantes,
                 diaSemana,
-                administrador.getId(),
+                administrador.getIdNumerico(),
                 administrador.getNombre(),
                 montoEntrada
         );
@@ -79,7 +79,7 @@ public class ServicioTorneos {
                         .anyMatch(jf -> jf == torneo.getIdJuego());
 
         ParticipanteTorneo participante = new ParticipanteTorneo(
-                usuario.getId(),
+                usuario.getIdNumerico(),
                 usuario.getNombre(),
                 esUnFan
         );
@@ -181,6 +181,10 @@ public class ServicioTorneos {
                 premioODescuento);
     }
 
+    public ResultadoValidacion finalizarTorneo(int idTorneo, String idGanador) {
+        return finalizarTorneo(idTorneo, parsearId(idGanador));
+    }
+
     /**
      * Calcula el premio o descuento para el ganador de un torneo.
      */
@@ -240,6 +244,10 @@ public class ServicioTorneos {
                 .collect(Collectors.toList());
     }
 
+    public List<Torneo> obtenerTorneosDelUsuario(String idUsuario) {
+        return obtenerTorneosDelUsuario(parsearId(idUsuario));
+    }
+
     /**
      * Obtiene los vouchers de descuento de un usuario.
      */
@@ -247,6 +255,10 @@ public class ServicioTorneos {
         return vouchers.stream()
                 .filter(v -> v.getIdUsuario() == idUsuario && v.esValido())
                 .collect(Collectors.toList());
+    }
+
+    public List<VoucherDescuento> obtenerVouchersDelUsuario(String idUsuario) {
+        return obtenerVouchersDelUsuario(parsearId(idUsuario));
     }
 
     /**
@@ -283,9 +295,13 @@ public class ServicioTorneos {
     public int verificarDisponibilidadCopias(JuegoDeMesa juego, int cantidadRequerida,
                                              List<CopiaJuego> todasLasCopias) {
         return (int) todasLasCopias.stream()
-                .filter(c -> c.getIdJuego() == juego.getId() &&
-                           c.getEstado() == EstadoJuego.DISPONIBLE)
+                .filter(c -> c.getJuego().getIdJuego().equals(juego.getIdJuego()) && c.isDisponible())
                 .count();
+    }
+
+    private int parsearId(String idTexto) {
+        String digitos = idTexto == null ? "" : idTexto.replaceAll("\\D", "");
+        return digitos.isEmpty() ? 0 : Integer.parseInt(digitos);
     }
 
     // Métodos de gestión de lista

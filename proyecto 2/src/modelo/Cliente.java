@@ -1,5 +1,8 @@
 package modelo;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 public class Cliente extends Usuario {
     private String codigoDeDescuento;
     private int puntosDeFidelidad;
@@ -63,6 +66,17 @@ public class Cliente extends Usuario {
 
     public String getCodigoDeDescuento() {
         return codigoDeDescuento;
+    }
+
+    public List<Integer> getJuegosFavoritos() {
+        return getFavoritos().stream()
+                .map(JuegoDeMesa::getId)
+                .collect(Collectors.toList());
+    }
+
+    public void agregarJuegoFavorito(int idJuego) {
+        agregarFavorito(new JuegoDeMesa(String.valueOf(idJuego), "", 0, "", 1, 1,
+                RestriccionEdad.TODAS_LAS_EDADES, CategoriaJuego.TABLERO, EstadoJuego.NUEVO, false));
     }
 
     // Nuevos métodos para acceso simplificado

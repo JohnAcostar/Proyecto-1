@@ -1,0 +1,27 @@
+RESUMEN ESTADISTICAS - BOARDGAMECAFE
+Generado: 2026-05-03T20:30:26.740152400
+
+FORMATO DE ARCHIVOS RAW
+usuarios.txt: ROL;login;password;id;datos extra...
+juegos.txt: id;nombre;anio;empresa;minJugadores;maxJugadores;restriccion;categoria;estado;dificil;precio
+ventas.txt: tipo;ventaId;base;descuento_o_propina;loginUsuario
+prestamos.txt: prestamoId;copyId;fechaPrestamo;fechaDevolucion;advertencia;activo;loginUsuario
+
+TOTALES
+Usuarios registrados: 8
+Juegos en catalogo: 16
+Ventas registradas: 0
+  Ventas de cafe: 0 | Total: $ 0
+  Ventas de juegos: 0 | Total: $ 0
+Total general ventas: $ 0
+Prestamos registrados: 0
+  Activos: 0
+  Devueltos: 0
+Copias prestamo disponibles: 48/48
+Copias venta disponibles: 32/32
+
+VENTAS
+Sin ventas registradas.
+
+PRESTAMOS
+Sin prestamos registrados.

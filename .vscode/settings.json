@@ -1,0 +1,12 @@
+{
+  "java.project.referencedLibraries": [
+    "C:/Users/Juan/.vscode/extensions/vscjava.vscode-java-test-0.45.0/server/junit-jupiter-api_5.14.3.jar",
+    "C:/Users/Juan/.vscode/extensions/vscjava.vscode-java-test-0.45.0/server/junit-jupiter-engine_5.14.3.jar",
+    "C:/Users/Juan/.vscode/extensions/vscjava.vscode-java-test-0.45.0/server/junit-platform-commons_1.14.3.jar",
+    "C:/Users/Juan/.vscode/extensions/vscjava.vscode-java-test-0.45.0/server/junit-platform-engine_1.14.3.jar",
+    "C:/Users/Juan/.vscode/extensions/vscjava.vscode-java-test-0.45.0/server/junit-platform-launcher_1.14.3.jar",
+    "C:/Users/Juan/.vscode/extensions/vscjava.vscode-java-test-0.45.0/server/org.apiguardian.api_1.1.2.jar",
+    "C:/Users/Juan/.vscode/extensions/vscjava.vscode-java-test-0.45.0/server/org.opentest4j_1.3.0.jar"
+  ],
+  "java.debug.settings.forceBuildBeforeLaunch": true
+}

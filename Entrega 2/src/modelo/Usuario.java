@@ -78,11 +78,20 @@ public abstract class Usuario {
         return login;
     }
 
+    public String getNombre() {
+        return login;
+    }
+
     public String getPassword() {
         return password;
     }
 
     public String getId() {
         return id;
+    }
+
+    public int getIdNumerico() {
+        String digitos = id == null ? "" : id.replaceAll("\\D", "");
+        return digitos.isEmpty() ? 0 : Integer.parseInt(digitos);
     }
 }

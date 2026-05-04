@@ -1,0 +1,44 @@
+RESUMEN ESTADISTICAS - BOARDGAMECAFE
+Generado: 2026-05-03T20:33:44.591547500
+
+FORMATO DE ARCHIVOS RAW
+usuarios.txt: ROL;login;password;id;datos extra...
+juegos.txt: id;nombre;anio;empresa;minJugadores;maxJugadores;restriccion;categoria;estado;dificil;precio
+ventas.txt: tipo;ventaId;base;descuento_o_propina;loginUsuario
+prestamos.txt: prestamoId;copyId;fechaPrestamo;fechaDevolucion;advertencia;activo;loginUsuario
+
+TOTALES
+Usuarios registrados: 4
+Juegos en catalogo: 16
+Ventas registradas: 9
+  Ventas de cafe: 4 | Total: $ 100.536
+  Ventas de juegos: 5 | Total: $ 788.256
+Total general ventas: $ 888.792
+Prestamos registrados: 10
+  Activos: 6
+  Devueltos: 4
+Copias prestamo disponibles: 51/57
+Copias venta disponibles: 31/32
+
+VENTAS
+VJ-1 | JUEGO | usuario=cliente1 | fecha=2026-05-02T20:33:44.546557900 | total=$ 65.450
+VC-2 | CAFE | usuario=mesero1 | fecha=2026-05-01T20:33:44.546557900 | total=$ 13.216
+VJ-3 | JUEGO | usuario=mesero1 | fecha=2026-04-30T20:33:44.546557900 | total=$ 190.400
+VJ-4 | JUEGO | usuario=cliente1 | fecha=2026-04-29T20:33:44.546557900 | total=$ 160.650
+VC-5 | CAFE | usuario=cliente1 | fecha=2026-04-28T20:33:44.546557900 | total=$ 31.080
+VJ-6 | JUEGO | usuario=cliente1 | fecha=2026-05-02T20:33:44.546557900 | total=$ 249.900
+VC-7 | CAFE | usuario=cliente1 | fecha=2026-05-01T20:33:44.546557900 | total=$ 20.720
+VJ-8 | JUEGO | usuario=mesero1 | fecha=2026-04-30T20:33:44.546557900 | total=$ 121.856
+VC-9 | CAFE | usuario=mesero1 | fecha=2026-04-29T20:33:44.546557900 | total=$ 35.520
+
+PRESTAMOS
+PR-1 | juego=Carcassonne | usuario=cliente1 | activo=false | fechaPrestamo=2026-04-18T14:45:47.546813800 | fechaDevolucion=2026-04-18T14:46:21.781102300
+PR-2 | juego=Carcassonne | usuario=cliente1 | activo=false | fechaPrestamo=2026-04-18T14:48:06.496369300 | fechaDevolucion=2026-04-18T15:19:55.190518200
+PR-3 | juego=Dominoes Pro | usuario=mesero1 | activo=false | fechaPrestamo=2026-04-18T14:54:21.927744500 | fechaDevolucion=2026-04-19T23:43:45.349987900
+PR-4 | juego=Scrabble | usuario=mesero1 | activo=true | fechaPrestamo=2026-04-18T14:54:43.931732200 | fechaDevolucion=
+PR-5 | juego=Scrabble | usuario=mesero1 | activo=true | fechaPrestamo=2026-04-18T14:55:36.370744600 | fechaDevolucion=
+PR-6 | juego=Scrabble | usuario=mesero1 | activo=true | fechaPrestamo=2026-04-18T14:55:46.539026900 | fechaDevolucion=
+PR-7 | juego=Scrabble | usuario=cliente1 | activo=false | fechaPrestamo=2026-04-18T15:04:08.974555 | fechaDevolucion=2026-04-18T15:20:24.191764900
+PR-8 | juego=Scrabble | usuario=cliente1 | activo=true | fechaPrestamo=2026-04-18T15:13:17.091786800 | fechaDevolucion=
+PR-9 | juego=Dino Clash | usuario=mesero1 | activo=true | fechaPrestamo=2026-04-18T15:14:25.743374700 | fechaDevolucion=
+PR-10 | juego=Scrabble | usuario=mesero1 | activo=true | fechaPrestamo=2026-04-19T23:43:28.472436600 | fechaDevolucion=

@@ -43,6 +43,16 @@ public class VoucherDescuento implements Serializable {
         this.fechaVencimiento = diasValidez > 0 ? LocalDate.now().plusDays(diasValidez) : null;
     }
 
+    public VoucherDescuento(int id, String idUsuario, int idTorneo, String nombreTorneo,
+                           double montoDescuento, int diasValidez) {
+        this(id, parsearId(idUsuario), idTorneo, nombreTorneo, montoDescuento, diasValidez);
+    }
+
+    private static int parsearId(String idTexto) {
+        String digitos = idTexto == null ? "" : idTexto.replaceAll("\\D", "");
+        return digitos.isEmpty() ? 0 : Integer.parseInt(digitos);
+    }
+
     /**
      * Marca el voucher como utilizado.
      */

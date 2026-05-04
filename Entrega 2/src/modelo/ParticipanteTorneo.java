@@ -3,27 +3,20 @@ package modelo;
 import java.io.Serializable;
 
 /**
- * Representa un participante registrado en un torneo específico.
- * Cada participante es un usuario que se ha registrado para un torneo.
+ * Representa un participante registrado en un torneo especifico.
  */
 public class ParticipanteTorneo implements Serializable {
     private static final long serialVersionUID = 1L;
 
     private int idUsuario;
     private String nombreUsuario;
-    private boolean esFan; // ¿Es fan del juego del torneo?
-    private boolean pagoPorEntrada; // En torneos competitivos, ¿pagó la entrada?
-    private double montoInscripcion; // Cantidad pagada (0 para amistosos o empleados)
-    private boolean gano; // ¿Ganó el torneo?
-    private double premioODescuento; // Premio en efectivo o descuento según tipo
+    private boolean esFan;
+    private boolean pagoPorEntrada;
+    private double montoInscripcion;
+    private boolean gano;
+    private double premioODescuento;
+    private boolean usoSpotReservadoFan;
 
-    /**
-     * Constructor para crear un participante de torneo.
-     *
-     * @param idUsuario ID del usuario
-     * @param nombreUsuario Nombre del usuario
-     * @param esFan ¿Es fan del juego del torneo?
-     */
     public ParticipanteTorneo(int idUsuario, String nombreUsuario, boolean esFan) {
         this.idUsuario = idUsuario;
         this.nombreUsuario = nombreUsuario;
@@ -32,9 +25,17 @@ public class ParticipanteTorneo implements Serializable {
         this.montoInscripcion = 0;
         this.gano = false;
         this.premioODescuento = 0;
+        this.usoSpotReservadoFan = false;
     }
 
-    // Getters y Setters
+    public ParticipanteTorneo(String idUsuario, String nombreUsuario, boolean esFan) {
+        this(parsearId(idUsuario), nombreUsuario, esFan);
+    }
+
+    private static int parsearId(String idTexto) {
+        String digitos = idTexto == null ? "" : idTexto.replaceAll("\\D", "");
+        return digitos.isEmpty() ? 0 : Integer.parseInt(digitos);
+    }
 
     public int getIdUsuario() {
         return idUsuario;
@@ -58,6 +59,14 @@ public class ParticipanteTorneo implements Serializable {
 
     public void setEsFan(boolean esFan) {
         this.esFan = esFan;
+    }
+
+    public boolean usoSpotReservadoFan() {
+        return usoSpotReservadoFan;
+    }
+
+    public void setUsoSpotReservadoFan(boolean usoSpotReservadoFan) {
+        this.usoSpotReservadoFan = usoSpotReservadoFan;
     }
 
     public boolean pagoPorEntrada() {

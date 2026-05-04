@@ -20,8 +20,32 @@ public class Turno {
         this.activo = true;
     }
 
+    public Turno(String turnoId, String idEmpleado, int diaSemana, String horaInicio, String horaFin) {
+        this.turnoId = turnoId;
+        this.dia = DayOfWeek.of(diaSemana);
+        this.startTime = LocalTime.parse(horaInicio);
+        this.endTime = LocalTime.parse(horaFin);
+        this.activo = true;
+    }
+
     public DayOfWeek getDia() {
         return dia;
+    }
+
+    public int getDiaSemana() {
+        return dia.getValue();
+    }
+
+    public LocalTime getHoraInicio() {
+        return startTime;
+    }
+
+    public LocalTime getHoraFin() {
+        return endTime;
+    }
+
+    public EstadoReserva getEstado() {
+        return activo ? EstadoReserva.ACEPTADA : EstadoReserva.CANCELADO;
     }
 
     public Empleado getEmpleado() {

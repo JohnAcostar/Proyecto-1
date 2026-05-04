@@ -52,11 +52,12 @@ public class FilePersistence {
     private static final String MENU_SUGGESTIONS_FILE = "sugerencias_menu.txt";
     private static final String TOURNAMENTS_FILE = "torneos.txt";
     private static final String VOUCHERS_FILE = "vouchersDescuento.txt";
+    private static final String STATS_FILE = "resumen_estadisticas.txt";
 
     private final Path dataFolder;
 
     public FilePersistence() {
-        this.dataFolder = Paths.get(System.getProperty("user.dir"), BASE_FOLDER);
+        this.dataFolder = resolveDataFolder();
     }
 
     public AppData load() {
@@ -101,10 +102,30 @@ public class FilePersistence {
         saveSugerencias(data.getSugerenciasMenu());
         saveTorneos(data.getTorneos());
         saveVouchersDescuento(data.getVouchersDescuento());
+        saveResumenEstadisticas(data);
     }
 
     public String getDataFolderPath() {
         return dataFolder.toAbsolutePath().toString();
+    }
+
+    private Path resolveDataFolder() {
+        Path currentFolder = Paths.get(System.getProperty("user.dir"));
+        try {
+            Path codeLocation = Paths.get(FilePersistence.class.getProtectionDomain()
+                    .getCodeSource()
+                    .getLocation()
+                    .toURI());
+            Path projectFolder = Files.isDirectory(codeLocation) && "bin".equalsIgnoreCase(codeLocation.getFileName().toString())
+                    ? codeLocation.getParent()
+                    : codeLocation;
+            if (projectFolder != null && Files.isDirectory(projectFolder.resolve(BASE_FOLDER))) {
+                return projectFolder.resolve(BASE_FOLDER);
+            }
+        } catch (Exception ignored) {
+            // Fallback below keeps the app usable in unusual launch configurations.
+        }
+        return currentFolder.resolve(BASE_FOLDER);
     }
 
     private void ensureFolder() {
@@ -579,6 +600,101 @@ public class FilePersistence {
                     fechaVencimiento));
         }
         writeLines(dataFolder.resolve(VOUCHERS_FILE), lines);
+    }
+
+    private void saveResumenEstadisticas(AppData data) {
+        List<String> lines = new ArrayList<>();
+        double totalVentas = 0;
+        double totalCafe = 0;
+        double totalJuegos = 0;
+        int ventasCafe = 0;
+        int ventasJuegos = 0;
+
+        for (Venta venta : data.getVentas()) {
+            totalVentas += venta.getTotal();
+            if (venta instanceof VentaCafe) {
+                ventasCafe++;
+                totalCafe += venta.getTotal();
+            } else if (venta instanceof VentaJuegos) {
+                ventasJuegos++;
+                totalJuegos += venta.getTotal();
+            }
+        }
+
+        long prestamosActivos = data.getHistorialPrestamos().stream()
+                .filter(Prestamo::estaActivo)
+                .count();
+        long prestamosDevueltos = data.getHistorialPrestamos().size() - prestamosActivos;
+        long copiasPrestamoDisponibles = data.getCopiasPrestamo().stream()
+                .filter(CopiaJuego::isDisponible)
+                .count();
+        long copiasVentaDisponibles = data.getCopiasVenta().stream()
+                .filter(CopiaJuego::isDisponible)
+                .count();
+
+        lines.add("RESUMEN ESTADISTICAS - BOARDGAMECAFE");
+        lines.add("Generado: " + LocalDateTime.now());
+        lines.add("");
+        lines.add("FORMATO DE ARCHIVOS RAW");
+        lines.add("usuarios.txt: ROL;login;password;id;datos extra...");
+        lines.add("juegos.txt: id;nombre;anio;empresa;minJugadores;maxJugadores;restriccion;categoria;estado;dificil;precio");
+        lines.add("ventas.txt: tipo;ventaId;base;descuento_o_propina;loginUsuario");
+        lines.add("prestamos.txt: prestamoId;copyId;fechaPrestamo;fechaDevolucion;advertencia;activo;loginUsuario");
+        lines.add("");
+        lines.add("TOTALES");
+        lines.add("Usuarios registrados: " + data.getUsuarios().size());
+        lines.add("Juegos en catalogo: " + data.getJuegos().size());
+        lines.add("Ventas registradas: " + data.getVentas().size());
+        lines.add("  Ventas de cafe: " + ventasCafe + " | Total: " + formatearMoneda(totalCafe));
+        lines.add("  Ventas de juegos: " + ventasJuegos + " | Total: " + formatearMoneda(totalJuegos));
+        lines.add("Total general ventas: " + formatearMoneda(totalVentas));
+        lines.add("Prestamos registrados: " + data.getHistorialPrestamos().size());
+        lines.add("  Activos: " + prestamosActivos);
+        lines.add("  Devueltos: " + prestamosDevueltos);
+        lines.add("Copias prestamo disponibles: " + copiasPrestamoDisponibles + "/" + data.getCopiasPrestamo().size());
+        lines.add("Copias venta disponibles: " + copiasVentaDisponibles + "/" + data.getCopiasVenta().size());
+        lines.add("");
+        lines.add("VENTAS");
+        if (data.getVentas().isEmpty()) {
+            lines.add("Sin ventas registradas.");
+        } else {
+            for (Venta venta : data.getVentas()) {
+                String usuario = venta.getUsuario() != null ? venta.getUsuario().getLogin() : "sin_usuario";
+                lines.add(String.join(" | ",
+                        venta.getVentaId(),
+                        venta.getRubro().name(),
+                        "usuario=" + usuario,
+                        "fecha=" + venta.getFecha(),
+                        "total=" + formatearMoneda(venta.getTotal())));
+            }
+        }
+
+        lines.add("");
+        lines.add("PRESTAMOS");
+        if (data.getHistorialPrestamos().isEmpty()) {
+            lines.add("Sin prestamos registrados.");
+        } else {
+            for (Prestamo prestamo : data.getHistorialPrestamos()) {
+                String usuario = prestamo.getUsuario() != null ? prestamo.getUsuario().getLogin() : "sin_usuario";
+                String juego = prestamo.getCopia() != null && prestamo.getCopia().getJuego() != null
+                        ? prestamo.getCopia().getJuego().getNombre()
+                        : "sin_juego";
+                lines.add(String.join(" | ",
+                        prestamo.getPrestamoId(),
+                        "juego=" + juego,
+                        "usuario=" + usuario,
+                        "activo=" + prestamo.estaActivo(),
+                        "fechaPrestamo=" + prestamo.getFechaPrestamo(),
+                        "fechaDevolucion=" + (prestamo.getFechaDevolucion() == null ? "" : prestamo.getFechaDevolucion().toString())));
+            }
+        }
+
+        writeLines(dataFolder.resolve(STATS_FILE), lines);
+    }
+
+    private String formatearMoneda(double cantidad) {
+        String formato = String.format("%,.0f", cantidad);
+        return "$ " + formato.replace(",", ".");
     }
 
     private void writeLines(Path path, List<String> lines) {
