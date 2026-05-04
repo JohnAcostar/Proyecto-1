@@ -84,8 +84,8 @@ public class ServicioTorneos {
                 esUnFan
         );
 
-        // Si es torneo competitivo, registrar pago
-        if (torneo.getTipo() == TipoTorneo.COMPETITIVO) {
+        // Si es torneo competitivo, registrar pago. Los empleados pueden jugar gratis.
+        if (torneo.getTipo() == TipoTorneo.COMPETITIVO && !(usuario instanceof Empleado)) {
             // En un caso real, aquí se procesaría el pago
             participante.setPagoPorEntrada(true);
             participante.setMontoInscripcion(torneo.getMontoEntrada());
@@ -155,6 +155,9 @@ public class ServicioTorneos {
 
         // Calcular premio/descuento
         double premioODescuento = calcularPremioParaGanador(torneo);
+        if (torneo.getTipo() == TipoTorneo.COMPETITIVO && !ganador.pagoPorEntrada()) {
+            premioODescuento = 0;
+        }
         ganador.setGano(true);
         ganador.setPremioODescuento(premioODescuento);
 
@@ -205,6 +208,10 @@ public class ServicioTorneos {
      */
     public List<Torneo> obtenerTodosTorneos() {
         return new ArrayList<>(torneos);
+    }
+
+    public List<VoucherDescuento> obtenerTodosVouchers() {
+        return new ArrayList<>(vouchers);
     }
 
     /**

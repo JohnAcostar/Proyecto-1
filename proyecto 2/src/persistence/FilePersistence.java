@@ -498,6 +498,9 @@ public class FilePersistence {
                 torneo.setFechaInicio(fechaInicio);
                 torneo.setFechaFin(fechaFin);
                 torneo.setPremioTotal(premioTotal);
+                if (p.length > 15 && !p[15].isBlank()) {
+                    cargarParticipantesTorneo(torneo, p[15]);
+                }
 
                 torneos.add(torneo);
             }
@@ -528,9 +531,51 @@ public class FilePersistence {
                     String.valueOf(torneo.getIdAdministrador()),
                     torneo.getNombreAdministrador(),
                     String.valueOf(torneo.getMontoEntrada()),
-                    String.valueOf(torneo.getPremioTotal())));
+                    String.valueOf(torneo.getPremioTotal()),
+                    formatearParticipantesTorneo(torneo.getParticipantes())));
         }
         writeLines(dataFolder.resolve(TOURNAMENTS_FILE), lines);
+    }
+
+    private void cargarParticipantesTorneo(Torneo torneo, String textoParticipantes) {
+        String[] participantes = textoParticipantes.split("\\|", -1);
+        for (String textoParticipante : participantes) {
+            if (textoParticipante.isBlank()) {
+                continue;
+            }
+            String[] p = textoParticipante.split(",", -1);
+            if (p.length < 7) {
+                continue;
+            }
+            ParticipanteTorneo participante = new ParticipanteTorneo(
+                    Integer.parseInt(p[0]),
+                    p[1],
+                    Boolean.parseBoolean(p[2]));
+            participante.setPagoPorEntrada(Boolean.parseBoolean(p[3]));
+            participante.setMontoInscripcion(Double.parseDouble(p[4]));
+            participante.setGano(Boolean.parseBoolean(p[5]));
+            participante.setPremioODescuento(Double.parseDouble(p[6]));
+            torneo.agregarParticipante(participante);
+        }
+    }
+
+    private String formatearParticipantesTorneo(List<ParticipanteTorneo> participantes) {
+        List<String> partes = new ArrayList<>();
+        for (ParticipanteTorneo participante : participantes) {
+            partes.add(String.join(",",
+                    String.valueOf(participante.getIdUsuario()),
+                    limpiarCampoCompuesto(participante.getNombreUsuario()),
+                    String.valueOf(participante.esFan()),
+                    String.valueOf(participante.pagoPorEntrada()),
+                    String.valueOf(participante.getMontoInscripcion()),
+                    String.valueOf(participante.gano()),
+                    String.valueOf(participante.getPremioODescuento())));
+        }
+        return String.join("|", partes);
+    }
+
+    private String limpiarCampoCompuesto(String valor) {
+        return valor == null ? "" : valor.replace(";", " ").replace("|", " ").replace(",", " ");
     }
 
     private List<VoucherDescuento> loadVouchersDescuento() {

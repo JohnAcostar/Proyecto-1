@@ -66,12 +66,6 @@ public class ValidadorTorneo {
             return new ResultadoValidacion(false, "No hay spots disponibles en este torneo");
         }
 
-        // Validar que el usuario no esté ya inscrito
-        if (torneo.obtenerParticipante(usuario.getId()) != null) {
-            return new ResultadoValidacion(false,
-                    "Ya estás inscrito en este torneo");
-        }
-
         // Validar límite de 3 participantes por usuario
         if (torneo.contarParticipantesDelUsuario(usuario.getId()) >= 3) {
             return new ResultadoValidacion(false,

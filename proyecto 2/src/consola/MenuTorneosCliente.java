@@ -165,15 +165,33 @@ public class MenuTorneosCliente {
             }
             
             Torneo torneo = abiertos.get(indice);
-            
-            ResultadoValidacion resultado = servicioTorneos.registrarUsuarioATorneo(
-                    torneo.getId(), cliente, todosTorneos
-            );
-            
-            if (resultado.esValido()) {
-                System.out.println("✅ ¡Te has inscrito al torneo exitosamente!");
+
+            System.out.print("Cantidad de cupos a reservar (1-3): ");
+            int cupos = Integer.parseInt(scanner.nextLine().trim());
+            if (cupos < 1 || cupos > 3) {
+                System.out.println("❌ La cantidad debe estar entre 1 y 3.");
+                return;
+            }
+
+            int registrados = 0;
+            ResultadoValidacion ultimoResultado = null;
+            for (int i = 0; i < cupos; i++) {
+                ultimoResultado = servicioTorneos.registrarUsuarioATorneo(
+                        torneo.getId(), cliente, todosTorneos
+                );
+                if (!ultimoResultado.esValido()) {
+                    break;
+                }
+                registrados++;
+            }
+
+            if (registrados == cupos) {
+                System.out.println("✅ Cupos reservados exitosamente: " + registrados);
+            } else if (registrados > 0) {
+                System.out.println("✅ Cupos reservados: " + registrados);
+                System.out.println("❌ No se pudieron reservar los demas: " + ultimoResultado.getMensaje());
             } else {
-                System.out.println("❌ " + resultado.getMensaje());
+                System.out.println("❌ " + (ultimoResultado != null ? ultimoResultado.getMensaje() : "No se pudo registrar al torneo."));
             }
         } catch (NumberFormatException e) {
             System.out.println("❌ Entrada inválida. Debes ingresar un número.");

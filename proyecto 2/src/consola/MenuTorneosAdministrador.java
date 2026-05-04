@@ -14,16 +14,19 @@ public class MenuTorneosAdministrador {
     private Administrador admin;
     private ServicioTorneos servicioTorneos;
     private List<JuegoDeMesa> juegos;
+    private List<CopiaJuego> copiasPrestamo;
     private List<Torneo> todosTorneos;
 
     public MenuTorneosAdministrador(Scanner scanner, Administrador admin, 
                                     ServicioTorneos servicioTorneos, 
                                     List<JuegoDeMesa> juegos, 
+                                    List<CopiaJuego> copiasPrestamo,
                                     List<Torneo> todosTorneos) {
         this.scanner = scanner;
         this.admin = admin;
         this.servicioTorneos = servicioTorneos;
         this.juegos = juegos;
+        this.copiasPrestamo = copiasPrestamo;
         this.todosTorneos = todosTorneos;
     }
 
@@ -138,6 +141,16 @@ public class MenuTorneosAdministrador {
             return;
         }
         
+        if (cantidad > juegoSeleccionado.getMaxJugadores()) {
+            int copiasDisponibles = servicioTorneos.verificarDisponibilidadCopias(
+                    juegoSeleccionado, cantidad, copiasPrestamo);
+            if (copiasDisponibles < cantidad) {
+                System.out.println("❌ No hay suficientes copias de prestamo disponibles para superar el maximo normal del juego.");
+                System.out.println("   Copias disponibles: " + copiasDisponibles + " / participantes solicitados: " + cantidad);
+                return;
+            }
+        }
+
         // Día de la semana
         System.out.println("\nDía de la semana:");
         System.out.println("1. Lunes   2. Martes  3. Miércoles  4. Jueves");

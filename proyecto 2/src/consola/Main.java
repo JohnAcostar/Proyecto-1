@@ -19,18 +19,22 @@ import modelo.VentaJuegos;
 import persistence.AppData;
 import persistence.FilePersistence;
 import service.SistemaCafe;
+import service.ServicioTorneos;
 
 public class Main {
     private static final Scanner SCANNER = new Scanner(System.in);
 
     public static void main(String[] args) {
         SistemaCafe sistema = new SistemaCafe();
+        ServicioTorneos servicioTorneos = new ServicioTorneos();
         FilePersistence persistence = new FilePersistence();
 
         AppData data = persistence.load();
         sistema.cargarDatos(data.getUsuarios(), data.getJuegos(), data.getVentas());
         sistema.cargarEstadoOperativo(data.getCopiasPrestamo(), data.getCopiasVenta(),
                 data.getHistorialPrestamos(), data.getSolicitudesTurno(), data.getSugerenciasMenu());
+        servicioTorneos.setTorneos(data.getTorneos());
+        servicioTorneos.setVouchers(data.getVouchersDescuento());
         sistema.reconstruirHistorialesUsuarios();
         sistema.inicializarDatosBaseSiVacio();
 
@@ -43,14 +47,15 @@ System.out.println("\n=== MENU PRINCIPAL ===");
         System.out.println("1) Iniciar sesion");
         System.out.println("2) Crear cuenta basica");
         System.out.println("3) Salir");
+            System.out.println("\nPara usar las cuentas de prueba, consulte las credenciales en la documentacion.");
             System.out.print("Seleccione opcion: ");
             int opcion = leerEntero();
 
             switch (opcion) {
-                case 1 -> flujoLogin(sistema);
+                case 1 -> flujoLogin(sistema, servicioTorneos);
                 case 2 -> flujoCrearCuentaBasica(sistema);
                 case 3 -> {
-                    guardarTodo(sistema, persistence);
+                    guardarTodo(sistema, servicioTorneos, persistence);
                     salir = true;
                 }
                 default -> System.out.println("Opcion invalida.");
@@ -59,7 +64,7 @@ System.out.println("\n=== MENU PRINCIPAL ===");
         SCANNER.close();
     }
 
-    private static void flujoLogin(SistemaCafe sistema) {
+    private static void flujoLogin(SistemaCafe sistema, ServicioTorneos servicioTorneos) {
         System.out.print("Login: ");
         String login = SCANNER.nextLine().trim();
         System.out.print("Password: ");
@@ -72,13 +77,13 @@ System.out.println("\n=== MENU PRINCIPAL ===");
         }
 
         if (usuario instanceof Cliente cliente) {
-            menuCliente(sistema, cliente);
-        } else if (usuario instanceof Administrador) {
-            menuAdministrador(sistema);
+            menuCliente(sistema, servicioTorneos, cliente);
+        } else if (usuario instanceof Administrador admin) {
+            menuAdministrador(sistema, servicioTorneos, admin);
         } else if (usuario instanceof modelo.UsuarioBasico) {
             menuUsuarioBasico(sistema, usuario);
         } else {
-            menuEmpleado(sistema, usuario);
+            menuEmpleado(sistema, servicioTorneos, usuario);
         }
     }
 
@@ -127,7 +132,7 @@ System.out.println("\n=== MENU PRINCIPAL ===");
         }
     }
 
-    private static void menuCliente(SistemaCafe sistema, Cliente cliente) {
+    private static void menuCliente(SistemaCafe sistema, ServicioTorneos servicioTorneos, Cliente cliente) {
         boolean volver = false;
         while (!volver) {
             System.out.println("\n=== Menu Cliente ===");
@@ -143,7 +148,10 @@ System.out.println("\n=== MENU PRINCIPAL ===");
             System.out.println("Cuenta:");
             System.out.println("  8) Ver puntos de fidelidad");
             System.out.println("  9) Menu de puntos");
-            System.out.println("  10) Cerrar sesion");
+            System.out.println("  10) Marcar juego favorito");
+            System.out.println("Torneos:");
+            System.out.println("  11) Menu de torneos");
+            System.out.println("  12) Cerrar sesion");
             System.out.print("Opcion: ");
             int opcion = leerEntero();
 
@@ -157,13 +165,16 @@ System.out.println("\n=== MENU PRINCIPAL ===");
                 case 7 -> flujoDevolverPrestamo(sistema, cliente);
                 case 8 -> System.out.println("Puntos actuales: " + cliente.getPuntosDeFidelidad());
                 case 9 -> menuPuntos(sistema, cliente);
-                case 10 -> volver = true;
+                case 10 -> flujoMarcarJuegoFavorito(sistema, cliente);
+                case 11 -> new MenuTorneosCliente(SCANNER, cliente, servicioTorneos,
+                        servicioTorneos.obtenerTodosTorneos()).mostrarMenuTorneos();
+                case 12 -> volver = true;
                 default -> System.out.println("Opcion invalida.");
             }
         }
     }
 
-    private static void menuEmpleado(SistemaCafe sistema, Usuario empleado) {
+    private static void menuEmpleado(SistemaCafe sistema, ServicioTorneos servicioTorneos, Usuario empleado) {
         Empleado emp = (Empleado) empleado;
         boolean volver = false;
         while (!volver) {
@@ -176,7 +187,9 @@ System.out.println("\n=== MENU PRINCIPAL ===");
             System.out.println("  4) Pedir prestamo de juego");
             System.out.println("  5) Devolver juego prestado");
             System.out.println("  6) Solicitar cambio de turno");
-            System.out.println("  7) Cerrar sesion");
+            System.out.println("Torneos:");
+            System.out.println("  7) Menu de torneos");
+            System.out.println("  8) Cerrar sesion");
             System.out.print("Opcion: ");
             int opcion = leerEntero();
 
@@ -187,13 +200,15 @@ System.out.println("\n=== MENU PRINCIPAL ===");
                 case 4 -> flujoPrestamoEmpleado(sistema, emp);
                 case 5 -> flujoDevolverPrestamo(sistema, empleado);
                 case 6 -> flujoSolicitudTurno(sistema, emp);
-                case 7 -> volver = true;
+                case 7 -> new MenuTorneosEmpleado(SCANNER, emp, servicioTorneos,
+                        servicioTorneos.obtenerTodosTorneos()).mostrarMenuTorneos();
+                case 8 -> volver = true;
                 default -> System.out.println("Opcion invalida.");
             }
         }
     }
 
-    private static void menuAdministrador(SistemaCafe sistema) {
+    private static void menuAdministrador(SistemaCafe sistema, ServicioTorneos servicioTorneos, Administrador admin) {
         boolean volver = false;
         while (!volver) {
             System.out.println("\n=== Menu Administrador ===");
@@ -208,7 +223,9 @@ System.out.println("\n=== MENU PRINCIPAL ===");
             System.out.println("Turnos y reportes:");
             System.out.println("  7) Aprobar solicitud de cambio de turno");
             System.out.println("  8) Reporte ventas (diario/semanal/mensual)");
-            System.out.println("  9) Cerrar sesion");
+            System.out.println("Torneos:");
+            System.out.println("  9) Menu de torneos");
+            System.out.println("  10) Cerrar sesion");
             System.out.print("Opcion: ");
             int opcion = leerEntero();
 
@@ -221,7 +238,10 @@ System.out.println("\n=== MENU PRINCIPAL ===");
                 case 6 -> flujoMarcarDesaparecido(sistema);
                 case 7 -> flujoAprobarSolicitudTurno(sistema);
                 case 8 -> flujoReporteVentas(sistema);
-                case 9 -> volver = true;
+                case 9 -> new MenuTorneosAdministrador(SCANNER, admin, servicioTorneos,
+                        sistema.getJuegosCatalogo(), sistema.getCopiasPrestamo(),
+                        servicioTorneos.obtenerTodosTorneos()).mostrarMenuTorneos();
+                case 10 -> volver = true;
                 default -> System.out.println("Opcion invalida.");
             }
         }
@@ -248,6 +268,39 @@ System.out.println("\n=== MENU PRINCIPAL ===");
             }
         }
     }
+
+    private static void flujoMarcarJuegoFavorito(SistemaCafe sistema, Cliente cliente) {
+        List<JuegoDeMesa> juegos = sistema.getJuegosCatalogo();
+        if (juegos.isEmpty()) {
+            System.out.println("No hay juegos disponibles para marcar como favoritos.");
+            return;
+        }
+
+        System.out.println("\n=== Marcar juego favorito ===");
+        for (int i = 0; i < juegos.size(); i++) {
+            JuegoDeMesa juego = juegos.get(i);
+            String marcado = cliente.getJuegosFavoritos().contains(juego.getId()) ? " (favorito)" : "";
+            System.out.println((i + 1) + ") " + juego.getNombre() + marcado);
+        }
+        System.out.print("Seleccione juego (0 para cancelar): ");
+        int indice = leerEntero();
+        if (indice == 0) {
+            return;
+        }
+        if (indice < 1 || indice > juegos.size()) {
+            System.out.println("Opcion invalida.");
+            return;
+        }
+
+        JuegoDeMesa juego = juegos.get(indice - 1);
+        if (cliente.getJuegosFavoritos().contains(juego.getId())) {
+            System.out.println("Ese juego ya estaba marcado como favorito.");
+            return;
+        }
+        cliente.agregarFavorito(juego);
+        System.out.println("Juego favorito agregado: " + juego.getNombre());
+    }
+
 
     private static void mostrarDetalleVentasJuegos(SistemaCafe sistema) {
         List<Venta> ventas = sistema.getVentasPorRubro(RubroVenta.JUEGO);
@@ -601,7 +654,7 @@ System.out.println("\n=== MENU PRINCIPAL ===");
         return "$ " + formato.replace(",", ".");
     }
 
-    private static void guardarTodo(SistemaCafe sistema, FilePersistence persistence) {
+    private static void guardarTodo(SistemaCafe sistema, ServicioTorneos servicioTorneos, FilePersistence persistence) {
         AppData data = new AppData();
         data.setUsuarios(sistema.getUsuarios());
         data.setJuegos(sistema.getJuegosCatalogo());
@@ -611,6 +664,8 @@ System.out.println("\n=== MENU PRINCIPAL ===");
         data.setHistorialPrestamos(sistema.getHistorialPrestamos());
         data.setSolicitudesTurno(sistema.getSolicitudesCambio());
         data.setSugerenciasMenu(sistema.getSugerenciasMenu());
+        data.setTorneos(servicioTorneos.obtenerTodosTorneos());
+        data.setVouchersDescuento(servicioTorneos.obtenerTodosVouchers());
         persistence.save(data);
         System.out.println("Datos guardados.");
     }
