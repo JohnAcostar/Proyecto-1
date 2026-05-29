@@ -74,6 +74,9 @@ public class Proyecto3Frame extends JFrame {
 
     private final CardLayout cards = new CardLayout();
     private final JPanel root = new JPanel(cards);
+    private JTabbedPane appTabs;
+    private Component reportsTab;
+    private Component chartsTab;
     private JLabel sessionLabel;
     private DefaultTableModel juegosModel;
     private DefaultTableModel cafeModel;
@@ -167,6 +170,7 @@ public class Proyecto3Frame extends JFrame {
             }
             usuarioActual = usuario;
             sessionLabel.setText("Sesion: " + usuario.getLogin() + " (" + roleName(usuario) + ")");
+            configureRoleTabs();
             refreshAll();
             cards.show(root, "app");
         });
@@ -213,15 +217,17 @@ public class Proyecto3Frame extends JFrame {
         header.add(title, BorderLayout.WEST);
         header.add(session, BorderLayout.EAST);
 
-        JTabbedPane tabs = new JTabbedPane();
-        tabs.addTab("Catalogo", buildCatalogPanel());
-        tabs.addTab("Operaciones", buildOperationsPanel());
-        tabs.addTab("Reportes", buildReportsPanel());
-        tabs.addTab("Graficas", buildChartsPanel());
-        tabs.addTab("Torneos", buildTournamentsPanel());
+        appTabs = new JTabbedPane();
+        reportsTab = buildReportsPanel();
+        chartsTab = buildChartsPanel();
+        appTabs.addTab("Catalogo", buildCatalogPanel());
+        appTabs.addTab("Operaciones", buildOperationsPanel());
+        appTabs.addTab("Reportes", reportsTab);
+        appTabs.addTab("Graficas", chartsTab);
+        appTabs.addTab("Torneos", buildTournamentsPanel());
 
         panel.add(header, BorderLayout.NORTH);
-        panel.add(tabs, BorderLayout.CENTER);
+        panel.add(appTabs, BorderLayout.CENTER);
         return panel;
     }
 
@@ -669,7 +675,10 @@ public class Proyecto3Frame extends JFrame {
             return;
         }
         prestamosModel.setRowCount(0);
-        for (Prestamo prestamo : sistema.getHistorialPrestamos()) {
+        List<Prestamo> prestamos = usuarioActual instanceof Administrador
+                ? sistema.getHistorialPrestamos()
+                : usuarioActual == null ? List.of() : usuarioActual.getHistorialPrestamos();
+        for (Prestamo prestamo : prestamos) {
             String usuario = prestamo.getUsuario() == null ? "" : prestamo.getUsuario().getLogin();
             prestamosModel.addRow(new Object[] {
                     prestamo.getPrestamoId(), prestamo.getCopia().getJuego().getNombre(), usuario,
@@ -683,7 +692,10 @@ public class Proyecto3Frame extends JFrame {
             return;
         }
         ventasModel.setRowCount(0);
-        for (Venta venta : sistema.getVentas()) {
+        List<Venta> ventas = usuarioActual instanceof Administrador
+                ? sistema.getVentas()
+                : usuarioActual == null ? List.of() : usuarioActual.getHistorialVentas();
+        for (Venta venta : ventas) {
             ventasModel.addRow(new Object[] {
                     venta.getVentaId(), venta.getFecha().toLocalDate().format(DATE_FORMAT), venta.getRubro(),
                     money(venta.getSubtotal()), money(venta.getImpuesto()), money(venta.getTotal()),
@@ -745,6 +757,12 @@ public class Proyecto3Frame extends JFrame {
         if (pieChart == null || barChart == null || lineChart == null) {
             return;
         }
+        if (!(usuarioActual instanceof Administrador)) {
+            pieChart.setValues(new LinkedHashMap<>());
+            barChart.setData(List.of(), List.of(), List.of());
+            lineChart.setData(List.of(), List.of());
+            return;
+        }
         JuegoDeMesa juego = (JuegoDeMesa) chartGameCombo.getSelectedItem();
         Map<String, Double> pie = new LinkedHashMap<>();
         if (juego != null) {
@@ -803,6 +821,24 @@ public class Proyecto3Frame extends JFrame {
         data.setTorneos(servicioTorneos.obtenerTodosTorneos());
         data.setVouchersDescuento(servicioTorneos.obtenerTodosVouchers());
         persistence.save(data);
+    }
+
+    private void configureRoleTabs() {
+        if (appTabs == null) {
+            return;
+        }
+        boolean admin = usuarioActual instanceof Administrador;
+        setTabVisible("Reportes", reportsTab, 2, admin);
+        setTabVisible("Graficas", chartsTab, admin ? 3 : 2, admin);
+    }
+
+    private void setTabVisible(String title, Component tab, int index, boolean visible) {
+        int current = appTabs.indexOfComponent(tab);
+        if (visible && current < 0) {
+            appTabs.insertTab(title, null, tab, null, Math.min(index, appTabs.getTabCount()));
+        } else if (!visible && current >= 0) {
+            appTabs.removeTabAt(current);
+        }
     }
 
     private JTable styledTable(DefaultTableModel model) {
