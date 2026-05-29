@@ -692,9 +692,7 @@ public class Proyecto3Frame extends JFrame {
             return;
         }
         ventasModel.setRowCount(0);
-        List<Venta> ventas = usuarioActual instanceof Administrador
-                ? sistema.getVentas()
-                : usuarioActual == null ? List.of() : usuarioActual.getHistorialVentas();
+        List<Venta> ventas = ventasVisiblesParaUsuario();
         for (Venta venta : ventas) {
             ventasModel.addRow(new Object[] {
                     venta.getVentaId(), venta.getFecha().toLocalDate().format(DATE_FORMAT), venta.getRubro(),
@@ -828,8 +826,29 @@ public class Proyecto3Frame extends JFrame {
             return;
         }
         boolean admin = usuarioActual instanceof Administrador;
-        setTabVisible("Reportes", reportsTab, 2, admin);
+        setTabVisible("Reportes", reportsTab, 2, usuarioActual != null);
         setTabVisible("Graficas", chartsTab, admin ? 3 : 2, admin);
+    }
+
+    private List<Venta> ventasVisiblesParaUsuario() {
+        if (usuarioActual == null) {
+            return List.of();
+        }
+        if (usuarioActual instanceof Administrador) {
+            return sistema.getVentas();
+        }
+        return sistema.getVentas().stream()
+                .filter(venta -> perteneceAUsuarioActual(venta.getUsuario()))
+                .toList();
+    }
+
+    private boolean perteneceAUsuarioActual(Usuario usuarioVenta) {
+        if (usuarioVenta == null || usuarioActual == null) {
+            return false;
+        }
+        return usuarioVenta == usuarioActual
+                || usuarioVenta.getLogin().equals(usuarioActual.getLogin())
+                || usuarioVenta.getId().equals(usuarioActual.getId());
     }
 
     private void setTabVisible(String title, Component tab, int index, boolean visible) {
