@@ -1,5 +1,5 @@
 RESUMEN ESTADISTICAS - BOARDGAMECAFE
-Generado: 2026-05-28T20:15:36.738316
+Generado: 2026-05-28T20:31:11.791346
 
 FORMATO DE ARCHIVOS RAW
 usuarios.txt: ROL;login;password;id;datos extra...

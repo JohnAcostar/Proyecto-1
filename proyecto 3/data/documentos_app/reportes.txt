@@ -1,5 +1,5 @@
 REPORTES - DULCES & DADOS
-Generado: 2026-05-28T20:15:36.745045
+Generado: 2026-05-28T20:31:11.797673
 
 RESUMEN DE VENTAS
 Cafeteria - subtotal: $ 70.200 | impuestos: $ 5.616 | total: $ 100.536
