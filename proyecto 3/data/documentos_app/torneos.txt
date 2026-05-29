@@ -1,0 +1,11 @@
+TORNEOS - DULCES & DADOS
+Generado: 2026-05-28T20:15:36.746163
+
+Torneo #1 - test 1
+Juego: Twister
+Tipo: Amistoso | Estado: Abierto
+Dia semana: 2 | Cupos: 0/4
+Administrador: admin
+Entrada: $ 0 | Premio total: $ 0
+Participantes: sin participantes registrados.
+

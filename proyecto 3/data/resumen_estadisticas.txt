@@ -1,10 +1,10 @@
 RESUMEN ESTADISTICAS - BOARDGAMECAFE
-Generado: 2026-05-03T20:35:42.578259400
+Generado: 2026-05-28T20:15:36.738316
 
 FORMATO DE ARCHIVOS RAW
 usuarios.txt: ROL;login;password;id;datos extra...
 juegos.txt: id;nombre;anio;empresa;minJugadores;maxJugadores;restriccion;categoria;estado;dificil;precio
-ventas.txt: tipo;ventaId;base;descuento_o_propina;loginUsuario
+ventas.txt: tipo;ventaId;base;descuento_o_propina;loginUsuario;fecha
 prestamos.txt: prestamoId;copyId;fechaPrestamo;fechaDevolucion;advertencia;activo;loginUsuario
 
 TOTALES
@@ -21,15 +21,15 @@ Copias prestamo disponibles: 51/57
 Copias venta disponibles: 31/32
 
 VENTAS
-VJ-1 | JUEGO | usuario=cliente1 | fecha=2026-05-02T20:35:15.729912300 | total=$ 65.450
-VC-2 | CAFE | usuario=mesero1 | fecha=2026-05-01T20:35:15.730912 | total=$ 13.216
-VJ-3 | JUEGO | usuario=mesero1 | fecha=2026-04-30T20:35:15.730912 | total=$ 190.400
-VJ-4 | JUEGO | usuario=cliente1 | fecha=2026-04-29T20:35:15.730912 | total=$ 160.650
-VC-5 | CAFE | usuario=cliente1 | fecha=2026-04-28T20:35:15.730912 | total=$ 31.080
-VJ-6 | JUEGO | usuario=cliente1 | fecha=2026-05-02T20:35:15.731416400 | total=$ 249.900
-VC-7 | CAFE | usuario=cliente1 | fecha=2026-05-01T20:35:15.731416400 | total=$ 20.720
-VJ-8 | JUEGO | usuario=mesero1 | fecha=2026-04-30T20:35:15.731416400 | total=$ 121.856
-VC-9 | CAFE | usuario=mesero1 | fecha=2026-04-29T20:35:15.731416400 | total=$ 35.520
+VJ-1 | JUEGO | usuario=cliente1 | fecha=2026-05-27T20:15:36.725479 | total=$ 65.450
+VC-2 | CAFE | usuario=mesero1 | fecha=2026-05-26T20:15:36.725758 | total=$ 13.216
+VJ-3 | JUEGO | usuario=mesero1 | fecha=2026-05-25T20:15:36.725851 | total=$ 190.400
+VJ-4 | JUEGO | usuario=cliente1 | fecha=2026-05-24T20:15:36.725862 | total=$ 160.650
+VC-5 | CAFE | usuario=cliente1 | fecha=2026-05-23T20:15:36.725869 | total=$ 31.080
+VJ-6 | JUEGO | usuario=cliente1 | fecha=2026-05-27T20:15:36.725877 | total=$ 249.900
+VC-7 | CAFE | usuario=cliente1 | fecha=2026-05-26T20:15:36.725886 | total=$ 20.720
+VJ-8 | JUEGO | usuario=mesero1 | fecha=2026-05-25T20:15:36.725893 | total=$ 121.856
+VC-9 | CAFE | usuario=mesero1 | fecha=2026-05-24T20:15:36.725901 | total=$ 35.520
 
 PRESTAMOS
 PR-1 | juego=Carcassonne | usuario=cliente1 | activo=false | fechaPrestamo=2026-04-18T14:45:47.546813800 | fechaDevolucion=2026-04-18T14:46:21.781102300

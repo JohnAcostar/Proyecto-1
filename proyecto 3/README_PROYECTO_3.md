@@ -23,6 +23,9 @@ La consola original se conserva en `src/consola/Main.java` para no romper funcio
   - Pastel: copias para venta vs. copias para prestamo por juego.
   - Barras: ventas netas de cafeteria vs. juegos durante los ultimos 5 dias.
   - Lineas: reservas/prestamos registrados durante la semana actual.
+- Documentos de la aplicacion guardados en archivos portables:
+  - `data/documentos_app/reportes.txt`
+  - `data/documentos_app/torneos.txt`
 
 ## Diseno de interfaz
 
@@ -52,6 +55,7 @@ Dulces & Dados
 
 - Se reutiliza `SistemaCafe` como fachada principal para no duplicar reglas de negocio.
 - Se conserva `FilePersistence` para cargar y guardar archivos en `data`.
+- Los documentos visibles de reportes y torneos se exportan como texto en `data/documentos_app`, usando rutas relativas al proyecto para que funcionen igual en Windows y macOS.
 - Se evita JavaFX y librerias externas. Las graficas se dibujan con Java2D dentro de paneles Swing:
   - `PieChartPanel`
   - `BarChartPanel`

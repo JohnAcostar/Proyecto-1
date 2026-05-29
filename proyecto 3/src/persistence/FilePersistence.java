@@ -53,6 +53,9 @@ public class FilePersistence {
     private static final String TOURNAMENTS_FILE = "torneos.txt";
     private static final String VOUCHERS_FILE = "vouchersDescuento.txt";
     private static final String STATS_FILE = "resumen_estadisticas.txt";
+    private static final String APP_DOCS_FOLDER = "documentos_app";
+    private static final String REPORTS_DOC_FILE = "reportes.txt";
+    private static final String TOURNAMENTS_DOC_FILE = "torneos.txt";
 
     private final Path dataFolder;
 
@@ -103,6 +106,7 @@ public class FilePersistence {
         saveTorneos(data.getTorneos());
         saveVouchersDescuento(data.getVouchersDescuento());
         saveResumenEstadisticas(data);
+        saveDocumentosApp(data);
     }
 
     public String getDataFolderPath() {
@@ -225,9 +229,13 @@ public class FilePersistence {
                 String[] p = line.split(";", -1);
                 Usuario usuarioVenta = p.length > 4 && !p[4].isBlank() ? usuariosMap.get(p[4]) : null;
                 
-                // Variar las fechas: cada venta obtiene una fecha diferente (entre 5 y 1 dias atras)
-                long diasAtras = (contador % 5) + 1;
-                java.time.LocalDateTime fecha = java.time.LocalDateTime.now().minusDays(diasAtras);
+                LocalDateTime fecha;
+                if (p.length > 5 && !p[5].isBlank()) {
+                    fecha = LocalDateTime.parse(p[5]);
+                } else {
+                    long diasAtras = (contador % 5) + 1;
+                    fecha = LocalDateTime.now().minusDays(diasAtras);
+                }
                 
                 if ("JUEGO".equals(p[0])) {
                     VentaJuegos venta = new VentaJuegos(p[1], Double.parseDouble(p[2]), usuarioVenta);
@@ -297,9 +305,11 @@ public class FilePersistence {
         for (Venta venta : ventas) {
             String usuarioLogin = (venta.getUsuario() != null) ? venta.getUsuario().getLogin() : "";
             if (venta instanceof VentaJuegos juegos) {
-                lines.add("JUEGO;" + juegos.getVentaId() + ";" + juegos.getBase() + ";" + juegos.getDescuentoAplicado() + ";" + usuarioLogin);
+                lines.add("JUEGO;" + juegos.getVentaId() + ";" + juegos.getBase() + ";"
+                        + juegos.getDescuentoAplicado() + ";" + usuarioLogin + ";" + juegos.getFecha());
             } else if (venta instanceof VentaCafe cafe) {
-                lines.add("CAFE;" + cafe.getVentaId() + ";" + cafe.getBase() + ";" + cafe.getPorcentajePropina() + ";" + usuarioLogin);
+                lines.add("CAFE;" + cafe.getVentaId() + ";" + cafe.getBase() + ";"
+                        + cafe.getPorcentajePropina() + ";" + usuarioLogin + ";" + cafe.getFecha());
             }
         }
         writeLines(dataFolder.resolve(SALES_FILE), lines);
@@ -683,7 +693,7 @@ public class FilePersistence {
         lines.add("FORMATO DE ARCHIVOS RAW");
         lines.add("usuarios.txt: ROL;login;password;id;datos extra...");
         lines.add("juegos.txt: id;nombre;anio;empresa;minJugadores;maxJugadores;restriccion;categoria;estado;dificil;precio");
-        lines.add("ventas.txt: tipo;ventaId;base;descuento_o_propina;loginUsuario");
+        lines.add("ventas.txt: tipo;ventaId;base;descuento_o_propina;loginUsuario;fecha");
         lines.add("prestamos.txt: prestamoId;copyId;fechaPrestamo;fechaDevolucion;advertencia;activo;loginUsuario");
         lines.add("");
         lines.add("TOTALES");
@@ -735,6 +745,105 @@ public class FilePersistence {
         }
 
         writeLines(dataFolder.resolve(STATS_FILE), lines);
+    }
+
+    private void saveDocumentosApp(AppData data) {
+        Path docsFolder = dataFolder.resolve(APP_DOCS_FOLDER);
+        try {
+            Files.createDirectories(docsFolder);
+        } catch (IOException e) {
+            throw new RuntimeException("No se pudo crear carpeta de documentos de la app", e);
+        }
+        writeLines(docsFolder.resolve(REPORTS_DOC_FILE), construirDocumentoReportes(data));
+        writeLines(docsFolder.resolve(TOURNAMENTS_DOC_FILE), construirDocumentoTorneos(data));
+    }
+
+    private List<String> construirDocumentoReportes(AppData data) {
+        List<String> lines = new ArrayList<>();
+        double subtotalCafe = 0;
+        double impuestosCafe = 0;
+        double totalCafe = 0;
+        double subtotalJuegos = 0;
+        double impuestosJuegos = 0;
+        double totalJuegos = 0;
+
+        for (Venta venta : data.getVentas()) {
+            if (venta instanceof VentaCafe) {
+                subtotalCafe += venta.getSubtotal();
+                impuestosCafe += venta.getImpuesto();
+                totalCafe += venta.getTotal();
+            } else if (venta instanceof VentaJuegos) {
+                subtotalJuegos += venta.getSubtotal();
+                impuestosJuegos += venta.getImpuesto();
+                totalJuegos += venta.getTotal();
+            }
+        }
+
+        lines.add("REPORTES - DULCES & DADOS");
+        lines.add("Generado: " + LocalDateTime.now());
+        lines.add("");
+        lines.add("RESUMEN DE VENTAS");
+        lines.add("Cafeteria - subtotal: " + formatearMoneda(subtotalCafe)
+                + " | impuestos: " + formatearMoneda(impuestosCafe)
+                + " | total: " + formatearMoneda(totalCafe));
+        lines.add("Juegos - subtotal: " + formatearMoneda(subtotalJuegos)
+                + " | impuestos: " + formatearMoneda(impuestosJuegos)
+                + " | total: " + formatearMoneda(totalJuegos));
+        lines.add("Total general: " + formatearMoneda(totalCafe + totalJuegos));
+        lines.add("");
+        lines.add("DETALLE DE VENTAS");
+        if (data.getVentas().isEmpty()) {
+            lines.add("Sin ventas registradas.");
+        } else {
+            for (Venta venta : data.getVentas()) {
+                String usuario = venta.getUsuario() == null ? "sin_usuario" : venta.getUsuario().getLogin();
+                lines.add(String.join(" | ",
+                        venta.getVentaId(),
+                        venta.getFecha().toLocalDate().toString(),
+                        venta.getRubro().name(),
+                        "usuario=" + usuario,
+                        "subtotal=" + formatearMoneda(venta.getSubtotal()),
+                        "impuesto=" + formatearMoneda(venta.getImpuesto()),
+                        "total=" + formatearMoneda(venta.getTotal())));
+            }
+        }
+        return lines;
+    }
+
+    private List<String> construirDocumentoTorneos(AppData data) {
+        List<String> lines = new ArrayList<>();
+        lines.add("TORNEOS - DULCES & DADOS");
+        lines.add("Generado: " + LocalDateTime.now());
+        lines.add("");
+        if (data.getTorneos().isEmpty()) {
+            lines.add("Sin torneos registrados.");
+            return lines;
+        }
+
+        for (Torneo torneo : data.getTorneos()) {
+            lines.add("Torneo #" + torneo.getId() + " - " + torneo.getNombre());
+            lines.add("Juego: " + torneo.getNombreJuego());
+            lines.add("Tipo: " + torneo.getTipo() + " | Estado: " + torneo.getEstado());
+            lines.add("Dia semana: " + torneo.getDiaSemana()
+                    + " | Cupos: " + torneo.getParticipantes().size()
+                    + "/" + torneo.getCantidadMaximaParticipantes());
+            lines.add("Administrador: " + torneo.getNombreAdministrador());
+            lines.add("Entrada: " + formatearMoneda(torneo.getMontoEntrada())
+                    + " | Premio total: " + formatearMoneda(torneo.getPremioTotal()));
+            if (torneo.getParticipantes().isEmpty()) {
+                lines.add("Participantes: sin participantes registrados.");
+            } else {
+                lines.add("Participantes:");
+                for (ParticipanteTorneo participante : torneo.getParticipantes()) {
+                    lines.add("  - " + participante.getNombreUsuario()
+                            + " | fan=" + participante.esFan()
+                            + " | pago=" + participante.pagoPorEntrada()
+                            + " | gano=" + participante.gano());
+                }
+            }
+            lines.add("");
+        }
+        return lines;
     }
 
     private String formatearMoneda(double cantidad) {
