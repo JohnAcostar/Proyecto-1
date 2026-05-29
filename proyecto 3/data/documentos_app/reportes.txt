@@ -1,10 +1,10 @@
 REPORTES - DULCES & DADOS
-Generado: 2026-05-28T20:31:11.797673
+Generado: 2026-05-28T22:13:58.605936
 
 RESUMEN DE VENTAS
-Cafeteria - subtotal: $ 70.200 | impuestos: $ 5.616 | total: $ 100.536
-Juegos - subtotal: $ 662.400 | impuestos: $ 125.856 | total: $ 788.256
-Total general: $ 888.792
+Cafeteria - subtotal: $ 84.200 | impuestos: $ 6.736 | total: $ 116.356
+Juegos - subtotal: $ 712.400 | impuestos: $ 135.356 | total: $ 847.756
+Total general: $ 964.112
 
 DETALLE DE VENTAS
 VJ-1 | 2026-05-27 | JUEGO | usuario=cliente1 | subtotal=$ 55.000 | impuesto=$ 10.450 | total=$ 65.450
@@ -16,3 +16,5 @@ VJ-6 | 2026-05-27 | JUEGO | usuario=cliente1 | subtotal=$ 210.000 | impuesto=$ 3
 VC-7 | 2026-05-26 | CAFE | usuario=cliente1 | subtotal=$ 14.000 | impuesto=$ 1.120 | total=$ 20.720
 VJ-8 | 2026-05-25 | JUEGO | usuario=mesero1 | subtotal=$ 102.400 | impuesto=$ 19.456 | total=$ 121.856
 VC-9 | 2026-05-24 | CAFE | usuario=mesero1 | subtotal=$ 24.000 | impuesto=$ 1.920 | total=$ 35.520
+VJ-10 | 2026-05-28 | JUEGO | usuario=admin | subtotal=$ 50.000 | impuesto=$ 9.500 | total=$ 59.500
+VC-11 | 2026-05-28 | CAFE | usuario=cliente1 | subtotal=$ 14.000 | impuesto=$ 1.120 | total=$ 15.820

@@ -1,5 +1,5 @@
 RESUMEN ESTADISTICAS - BOARDGAMECAFE
-Generado: 2026-05-28T20:31:11.791346
+Generado: 2026-05-28T22:13:58.602204
 
 FORMATO DE ARCHIVOS RAW
 usuarios.txt: ROL;login;password;id;datos extra...
@@ -10,10 +10,10 @@ prestamos.txt: prestamoId;copyId;fechaPrestamo;fechaDevolucion;advertencia;activ
 TOTALES
 Usuarios registrados: 4
 Juegos en catalogo: 16
-Ventas registradas: 9
-  Ventas de cafe: 4 | Total: $ 100.536
-  Ventas de juegos: 5 | Total: $ 788.256
-Total general ventas: $ 888.792
+Ventas registradas: 11
+  Ventas de cafe: 5 | Total: $ 116.356
+  Ventas de juegos: 6 | Total: $ 847.756
+Total general ventas: $ 964.112
 Prestamos registrados: 10
   Activos: 6
   Devueltos: 4
@@ -30,6 +30,8 @@ VJ-6 | JUEGO | usuario=cliente1 | fecha=2026-05-27T20:15:36.725877 | total=$ 249
 VC-7 | CAFE | usuario=cliente1 | fecha=2026-05-26T20:15:36.725886 | total=$ 20.720
 VJ-8 | JUEGO | usuario=mesero1 | fecha=2026-05-25T20:15:36.725893 | total=$ 121.856
 VC-9 | CAFE | usuario=mesero1 | fecha=2026-05-24T20:15:36.725901 | total=$ 35.520
+VJ-10 | JUEGO | usuario=admin | fecha=2026-05-28T21:44:38.111465 | total=$ 59.500
+VC-11 | CAFE | usuario=cliente1 | fecha=2026-05-28T21:52:01.243785 | total=$ 15.820
 
 PRESTAMOS
 PR-1 | juego=Carcassonne | usuario=cliente1 | activo=false | fechaPrestamo=2026-04-18T14:45:47.546813800 | fechaDevolucion=2026-04-18T14:46:21.781102300

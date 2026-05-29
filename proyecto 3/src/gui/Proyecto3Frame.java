@@ -115,6 +115,11 @@ public class Proyecto3Frame extends JFrame {
     private DefaultTableModel torneosModel;
     private JTextArea historialArea;
     private JTextArea torneosDetalleArea;
+    private JPanel turnosPanel;
+    private JLabel tipoSolicitudLabel;
+    private JComboBox<TipoSolicitudTurno> tipoSolicitudCombo;
+    private JButton solicitarTurnoButton;
+    private JButton aprobarTurnoButton;
     private JComboBox<JuegoDeMesa> chartGameCombo;
     private PieChartPanel pieChart;
     private BarChartPanel barChart;
@@ -401,7 +406,8 @@ public class Proyecto3Frame extends JFrame {
         forms.add(Box.createVerticalStrut(10));
         forms.add(buildCompraPanel());
         forms.add(Box.createVerticalStrut(10));
-        forms.add(buildTurnosPanel());
+        turnosPanel = buildTurnosPanel();
+        forms.add(turnosPanel);
 
         JPanel history = new JPanel(new BorderLayout(8, 8));
         history.setBackground(PANEL);
@@ -664,23 +670,24 @@ public class Proyecto3Frame extends JFrame {
             }
         };
         JTable turnos = styledTable(turnosModel);
-        JComboBox<TipoSolicitudTurno> tipoSolicitud = new JComboBox<>(TipoSolicitudTurno.values());
-        JButton solicitar = new JButton("Solicitar cambio");
-        JButton aprobar = new JButton("Aprobar seleccion");
-        stylePrimaryButton(solicitar);
-        styleSecondaryButton(aprobar);
-        solicitar.addActionListener(e -> {
+        tipoSolicitudLabel = new JLabel("Tipo");
+        tipoSolicitudCombo = new JComboBox<>(TipoSolicitudTurno.values());
+        solicitarTurnoButton = new JButton("Solicitar cambio");
+        aprobarTurnoButton = new JButton("Aprobar seleccion");
+        stylePrimaryButton(solicitarTurnoButton);
+        styleSecondaryButton(aprobarTurnoButton);
+        solicitarTurnoButton.addActionListener(e -> {
             if (!(usuarioActual instanceof Empleado empleado)) {
                 showInfo("Solo empleados pueden solicitar cambios de turno.");
                 return;
             }
-            TipoSolicitudTurno tipo = (TipoSolicitudTurno) tipoSolicitud.getSelectedItem();
+            TipoSolicitudTurno tipo = (TipoSolicitudTurno) tipoSolicitudCombo.getSelectedItem();
             SolicitudCambioTurno solicitud = empleado.solicitarCambioTurno(tipo == null ? TipoSolicitudTurno.CAMBIO : tipo);
             solicitud.setEmpleadoOrigen(empleado);
             sistema.registrarSolicitudCambioTurno(solicitud);
             guardarYRefrescar();
         });
-        aprobar.addActionListener(e -> {
+        aprobarTurnoButton.addActionListener(e -> {
             if (!(usuarioActual instanceof Administrador)) {
                 showInfo("Solo administradores pueden aprobar solicitudes.");
                 return;
@@ -696,10 +703,10 @@ public class Proyecto3Frame extends JFrame {
         });
         JPanel buttons = new JPanel(new FlowLayout(FlowLayout.LEFT));
         buttons.setOpaque(false);
-        buttons.add(new JLabel("Tipo"));
-        buttons.add(tipoSolicitud);
-        buttons.add(solicitar);
-        buttons.add(aprobar);
+        buttons.add(tipoSolicitudLabel);
+        buttons.add(tipoSolicitudCombo);
+        buttons.add(solicitarTurnoButton);
+        buttons.add(aprobarTurnoButton);
         panel.add(new JScrollPane(turnos), BorderLayout.CENTER);
         panel.add(buttons, BorderLayout.SOUTH);
         return panel;
@@ -1399,6 +1406,22 @@ public class Proyecto3Frame extends JFrame {
         JButton charts = navButtons.get(CHARTS_CARD);
         if (charts != null) {
             charts.setVisible(admin);
+        }
+        boolean empleado = usuarioActual instanceof Empleado;
+        if (turnosPanel != null) {
+            turnosPanel.setVisible(empleado || admin);
+        }
+        if (tipoSolicitudLabel != null) {
+            tipoSolicitudLabel.setVisible(empleado);
+        }
+        if (tipoSolicitudCombo != null) {
+            tipoSolicitudCombo.setVisible(empleado);
+        }
+        if (solicitarTurnoButton != null) {
+            solicitarTurnoButton.setVisible(empleado);
+        }
+        if (aprobarTurnoButton != null) {
+            aprobarTurnoButton.setVisible(admin);
         }
         String selected = currentNavigation();
         if (!admin && CHARTS_CARD.equals(selected)) {

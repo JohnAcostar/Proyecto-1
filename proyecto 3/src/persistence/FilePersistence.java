@@ -129,6 +129,18 @@ public class FilePersistence {
         } catch (Exception ignored) {
             // Fallback below keeps the app usable in unusual launch configurations.
         }
+        Path proyecto3Data = currentFolder.resolve("proyecto 3").resolve(BASE_FOLDER);
+        if (Files.isDirectory(proyecto3Data)) {
+            return proyecto3Data;
+        }
+        Path parent = currentFolder.getParent();
+        while (parent != null) {
+            proyecto3Data = parent.resolve("proyecto 3").resolve(BASE_FOLDER);
+            if (Files.isDirectory(proyecto3Data)) {
+                return proyecto3Data;
+            }
+            parent = parent.getParent();
+        }
         return currentFolder.resolve(BASE_FOLDER);
     }
 
