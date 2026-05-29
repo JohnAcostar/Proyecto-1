@@ -1,3 +1,10 @@
 {
+  "java.project.sourcePaths": [
+    "proyecto 3/src"
+  ],
+  "java.project.outputPath": "proyecto 3/bin",
+  "java.project.referencedLibraries": [
+    "proyecto 3/lib/**/*.jar"
+  ],
   "java.debug.settings.forceBuildBeforeLaunch": true
 }

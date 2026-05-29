@@ -6,8 +6,14 @@
       "name": "Run Proyecto 3 GUI",
       "request": "launch",
       "mainClass": "gui.MainSwing",
-      "projectName": "BoardGameCafe-Proyecto3",
-      "cwd": "${workspaceFolder}/proyecto 3"
+      "cwd": "${workspaceFolder}/proyecto 3",
+      "classPaths": [
+        "${workspaceFolder}/proyecto 3/bin",
+        "${workspaceFolder}/proyecto 3/lib/*"
+      ],
+      "sourcePaths": [
+        "${workspaceFolder}/proyecto 3/src"
+      ]
     }
   ]
 }
