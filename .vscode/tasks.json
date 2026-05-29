@@ -1,0 +1,54 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "Compile Proyecto 3 GUI",
+      "type": "shell",
+      "windows": {
+        "command": "powershell",
+        "args": [
+          "-NoProfile",
+          "-ExecutionPolicy",
+          "Bypass",
+          "-File",
+          "${workspaceFolder}\\proyecto 3\\run-proyecto3.ps1",
+          "-CompileOnly"
+        ]
+      },
+      "osx": {
+        "command": "${workspaceFolder}/proyecto 3/run-proyecto3.sh",
+        "args": [
+          "--compile-only"
+        ]
+      },
+      "linux": {
+        "command": "${workspaceFolder}/proyecto 3/run-proyecto3.sh",
+        "args": [
+          "--compile-only"
+        ]
+      },
+      "problemMatcher": "$javac"
+    },
+    {
+      "label": "Run Proyecto 3 GUI",
+      "type": "shell",
+      "windows": {
+        "command": "powershell",
+        "args": [
+          "-NoProfile",
+          "-ExecutionPolicy",
+          "Bypass",
+          "-File",
+          "${workspaceFolder}\\proyecto 3\\run-proyecto3.ps1"
+        ]
+      },
+      "osx": {
+        "command": "${workspaceFolder}/proyecto 3/run-proyecto3.sh"
+      },
+      "linux": {
+        "command": "${workspaceFolder}/proyecto 3/run-proyecto3.sh"
+      },
+      "problemMatcher": "$javac"
+    }
+  ]
+}
